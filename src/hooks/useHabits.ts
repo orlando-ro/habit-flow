@@ -97,7 +97,7 @@ export function useHabits() {
       } else if (type === 'NEGATIVE') {
         success = !completion;
       } else if (type === 'COUNT' && goalValue) {
-        success = completion && completion.value >= goalValue;
+        success = !!(completion && completion.value >= goalValue);
       }
 
       if (success) {
@@ -122,7 +122,7 @@ export function useHabits() {
 
   const importData = useCallback(async (jsonString: string) => {
     const data = JSON.parse(jsonString);
-    await db.transaction('rw', async () => {
+    await db.transaction('rw', ['habits', 'completions'], async () => {
       await db.habits.clear();
       await db.completions.clear();
       await db.habits.bulkAdd(data.habits);
